@@ -1,0 +1,11 @@
+name: ssugt-outgoing-calls-ui
+version: "3.9"
+
+services:
+  ui:
+    build: .
+    ports:
+      - "${UI_LOCAL_BIND}:${UI_PORT}"
+    env_file:
+      - .env
+    command: sh -c "vite preview --host $UI_HOST --port $UI_PORT"

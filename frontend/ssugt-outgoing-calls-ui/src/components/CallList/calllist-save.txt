@@ -1,0 +1,189 @@
+import React, { useRef } from "react";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  IconButton,
+  List,
+  ListItem,
+  Avatar,
+  Typography,
+  CircularProgress,
+  Box,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { Add as PlusIcon, Phone as PhoneIcon } from "@mui/icons-material";
+import { useApi } from "../../hooks/useApi/useApi";
+import type { Call } from "../../types/Call";
+import { useCallActions } from "../../hooks/useCallActions/useCallActions";
+import { CallListEditing } from "../ui/CallListEditing";
+
+interface Props {
+  calls: Call[];
+  loading?: boolean;
+  hasMore?: boolean;
+  onSelect: (call: Call) => void;
+  onCreate: () => void;
+  onDeleted: (payload: { id: string; call: Call }) => void;
+  onLoadMore: () => void;
+  selectedId?: string | number | null;
+}
+
+const CallList: React.FC<Props> = ({
+  calls,
+  loading,
+  hasMore,
+  onSelect,
+  onCreate,
+  onDeleted,
+  onLoadMore,
+  selectedId,
+}) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { patchCall, deleteCall } = useApi();
+
+  const {
+    editingId,
+    editValue,
+    setEditValue,
+    savingId,
+    deletingId,
+    startEdit,
+    cancelEdit,
+    handleSave,
+    handleDelete,
+  } = useCallActions({ patchCall, deleteCall, onDeleted });
+
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  const onScroll = () => {
+    const el = bodyRef.current;
+    if (!el || loading || !hasMore) return;
+    const padding = 64;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - padding) {
+      onLoadMore();
+    }
+  };
+
+  return (
+    <Card
+      sx={{
+        borderRadius: 4,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      <CardHeader
+        title="Обзвоны"
+        sx={{ borderBottom: "1px solid", borderColor: "divider" }}
+        action={
+          <IconButton color="primary" onClick={onCreate}>
+            <PlusIcon />
+          </IconButton>
+        }
+      />
+
+      <CardContent
+        ref={bodyRef}
+        onScroll={onScroll}
+        sx={{
+          p: "0 !important",
+          flex: 1,
+          overflowY: "auto",
+          bgcolor: "#fafafa",
+        }}
+      >
+        {calls.length === 0 && !loading ? (
+          <Box sx={{ p: 4, textAlign: "center", color: "text.secondary" }}>
+            <Typography>Нет активных обзвонов</Typography>
+          </Box>
+        ) : (
+          <List sx={{ p: 1 }}>
+            {calls.map((item) => {
+              const isEditing = editingId === item.id;
+              const isSaving = savingId === item.id;
+              const isDeleting = deletingId === item.id;
+
+              return (
+                <ListItem
+                  key={item.id}
+                  disablePadding
+                  onClick={() => !isEditing && onSelect(item)}
+                  sx={{
+                    borderRadius: 3,
+                    mb: 1,
+                    transition: "all 0.2s",
+                    cursor: "pointer",
+                    bgcolor: "background.paper",
+                    border: "1px solid transparent",
+                    "&:hover": {
+                      bgcolor: "rgba(31, 107, 193, 0.08)",
+                      borderColor: "#bef0f7",
+                      "& .hover-actions": { opacity: 1 },
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      p: 1.5,
+                      width: "100%",
+                      gap: 2,
+                    }}
+                  >
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        bgcolor: "primary.light",
+                        width: isMobile ? 32 : 40,
+                        height: isMobile ? 32 : 40,
+                      }}
+                    >
+                      <PhoneIcon fontSize={isMobile ? "small" : "medium"} />
+                    </Avatar>
+
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <CallListEditing
+                          cancelEdit={cancelEdit}
+                          editValue={editValue}
+                          handleDelete={handleDelete}
+                          handleSave={handleSave}
+                          isDeleting={isDeleting}
+                          isEditing={isEditing}
+                          isMobile={isMobile}
+                          isSaving={isSaving}
+                          setEditValue={setEditValue}
+                          startEdit={startEdit}
+                          item={item}
+                        />
+                      </Box>
+                      <Typography variant="caption" color="text.secondary">
+                        Номеров: {item.phone_calls_count ?? 0}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
+
+        {loading && (
+          <Box sx={{ display: "flex", justifyContent: "center", p: 2 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default CallList;

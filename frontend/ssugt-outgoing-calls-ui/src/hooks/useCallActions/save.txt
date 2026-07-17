@@ -1,0 +1,87 @@
+import { useState } from "react";
+import type { Call } from "../../types/Call";
+import type { Category } from "../../api/api";
+
+interface UseCallActionsProps {
+  patchCall: (
+    id: string,
+    data: {
+      is_paused?: boolean | undefined;
+      name?: string | undefined;
+      retry_limit?: number | undefined;
+      schedule?: any[] | undefined;
+      tts_type?: string | null | undefined;
+      categories?: Category[] | undefined;
+    },
+  ) => Promise<any>;
+  deleteCall: (id: string) => Promise<any>;
+  onDeleted: (payload: { id: string; call: Call }) => void;
+}
+
+export const useCallActions = ({
+  patchCall,
+  onDeleted,
+  deleteCall,
+}: UseCallActionsProps) => {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const startEdit = (e: React.MouseEvent, item: Call) => {
+    e.stopPropagation();
+    setEditingId(item.id);
+    setEditValue(item.name || "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+  };
+
+  const handleSave = async (
+    e: React.MouseEvent | React.KeyboardEvent,
+    item: Call,
+  ) => {
+    e.stopPropagation();
+    const name = editValue.trim();
+    if (!name || name === item.name || savingId || deletingId) {
+      cancelEdit();
+      return;
+    }
+
+    setSavingId(item.id);
+    try {
+      await patchCall(item.id, { name });
+      item.name = name;
+      cancelEdit();
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, item: Call) => {
+    e.stopPropagation();
+    if (!window.confirm("Вы действительно хотите удалить обзвон?")) return;
+
+    setDeletingId(item.id);
+    try {
+      await deleteCall(item.id);
+      onDeleted({ id: item.id, call: item });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  return {
+    editingId,
+    editValue,
+    setEditValue,
+    savingId,
+    deletingId,
+    startEdit,
+    cancelEdit,
+    handleSave,
+    handleDelete,
+  };
+};

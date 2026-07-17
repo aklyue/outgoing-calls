@@ -1,0 +1,3 @@
+0000000000000000000000000000000000000000 158461f905bb0bb4561fb58e63fb316cc6d1224a unknown <sryitscool59@gmail.com> 1783540858 +0700	branch: Created from HEAD
+158461f905bb0bb4561fb58e63fb316cc6d1224a c7e499f74801796ff8c836f4ab819524a0dafec8 unknown <sryitscool59@gmail.com> 1783540875 +0700	commit: fix: fixed email reports and control calls
+c7e499f74801796ff8c836f4ab819524a0dafec8 70936fd724b3c560819f948c3c970facdad46e6d unknown <sryitscool59@gmail.com> 1783541346 +0700	commit: fix: rename env.example and prepare for merge

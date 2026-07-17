@@ -1,0 +1,12 @@
+services:
+  edge-tts:
+    build: .
+    restart: always
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "${EDGE_TTS_SERVER_PORT}:${EDGE_TTS_SERVER_PORT}"
+    env_file: .env
+    volumes:
+      - ./src/edge_tts_service:/app/edge_tts_service

@@ -1,0 +1,186 @@
+import React, { useState, useEffect, useRef } from "react";
+import { Box, Typography, Button, Card } from "@mui/material";
+
+import { Empty } from "./components/Empty";
+
+import { useApi } from "./hooks/useApi/useApi";
+import { CreateCallModal } from "./components/CreateCallModal";
+import { CallList } from "./components/CallList";
+import { CallDetails } from "./components/CallDetails";
+import { useBalance } from "./hooks/useBalance/useBalance";
+
+import type { View } from "./types/View";
+import { useCalls } from "./hooks/useCalls/useCalls";
+import { usePhoneCalls } from "./hooks/usePhoneCalls/usePhoneCalls";
+import { useAppPollers } from "./hooks/useAppPollers/useAppPollers";
+import { Footer } from "./components/ui/Footer";
+
+const App: React.FC = () => {
+  const { getBalance, getCalls, getPhoneCalls, patchCall, downloadXlsx } =
+    useApi();
+
+  const [activeView, setActiveView] = useState<View>("calls");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const activeViewRef = useRef(activeView);
+
+  const { loadBalance, balanceText } = useBalance({ getBalance });
+
+  const {
+    calls,
+    setCalls,
+    callsLoading,
+    callsHasMore,
+    loadCalls,
+    refreshCallsSnapshot,
+    callsOffsetRef,
+    callsOffset,
+  } = useCalls({
+    getCalls,
+    activeViewRef,
+  });
+
+  const {
+    currentCall,
+    currentCallRef,
+    phoneCalls,
+    phoneCallsLoading,
+    phoneCallsHasMore,
+    loadPhoneCalls,
+    refreshPhoneCallsSnapshot,
+    phoneCallsOffsetRef,
+    phoneCallsOffset,
+    // togglePaused,
+    onCallDeleted,
+    selectCall,
+  } = usePhoneCalls({
+    getPhoneCalls,
+    activeViewRef,
+    patchCall,
+    setCalls,
+  });
+
+  useAppPollers({
+    loadBalance,
+    loadCalls,
+    refreshCallsSnapshot,
+    refreshPhoneCallsSnapshot,
+  });
+
+  useEffect(() => {
+    activeViewRef.current = activeView;
+    callsOffsetRef.current = callsOffset;
+    phoneCallsOffsetRef.current = phoneCallsOffset;
+    currentCallRef.current = currentCall;
+  });
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        bgcolor: "#f5f7fa",
+      }}
+    >
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          display: "flex",
+          overflow: "hidden",
+          p: 2,
+          gap: 2,
+          width: "100%",
+          boxSizing: "border-box",
+        }}
+      >
+        {activeView === "calls" ? (
+          <>
+            <Box
+              sx={{
+                flex: { xs: "none", md: 3 },
+                width: { xs: "100%", md: "auto" },
+                display: "flex",
+                flexDirection: "column",
+                minWidth: { md: "300px" },
+              }}
+            >
+              <CallList
+                calls={calls}
+                loading={callsLoading}
+                hasMore={callsHasMore}
+                onSelect={selectCall}
+                onCreate={() => setModalOpen(true)}
+                onLoadMore={() => loadCalls(false)}
+                onDeleted={onCallDeleted}
+                selectedId={currentCall?.id}
+              />
+            </Box>
+
+            <Box
+              sx={{
+                flex: { xs: "none", md: 9 },
+                display: { xs: currentCall ? "flex" : "none", md: "flex" },
+                flexDirection: "column",
+                minWidth: 0,
+              }}
+            >
+              <CallDetails
+                key={currentCall?.id}
+                currentCall={currentCall}
+                phoneCalls={phoneCalls}
+                loadingMore={phoneCallsLoading}
+                hasMore={phoneCallsHasMore}
+                // onTogglePaused={togglePaused}
+                onExport={() =>
+                  downloadXlsx(currentCall.id, `${currentCall.name}.xlsx`)
+                }
+                onLoadMore={() => loadPhoneCalls(false)}
+                onUpdateCall={(updated) => {
+                  selectCall(updated);
+                  setCalls((prev) =>
+                    prev.map((c) => (c.id === updated.id ? updated : c)),
+                  );
+                }}
+              />
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ m: "auto", textAlign: "center" }}>
+            <Card sx={{ p: 4, minWidth: 400 }}>
+              <Typography variant="h6" gutterBottom>
+                {activeView === "users" ? "Пользователи" : "Журнал"}
+              </Typography>
+              <Empty description="Здесь будет функционал раздела" />
+              <Button
+                variant="contained"
+                onClick={() => setActiveView("calls")}
+                sx={{ mt: 2 }}
+              >
+                Вернуться к обзвонам
+              </Button>
+            </Card>
+          </Box>
+        )}
+      </Box>
+
+      <Footer
+        activeView={activeView}
+        balanceText={balanceText}
+        setActiveView={setActiveView}
+      />
+
+      <CreateCallModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreated={() => {
+          setModalOpen(false);
+          loadCalls(true);
+        }}
+      />
+    </Box>
+  );
+};
+
+export default App;

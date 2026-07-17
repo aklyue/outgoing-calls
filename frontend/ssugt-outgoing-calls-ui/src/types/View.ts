@@ -1,0 +1,1 @@
+export type View = "calls" | "users" | "journal" | "logout" | "register";

@@ -1,0 +1,16 @@
+0000000000000000000000000000000000000000 d3a4b9bd49ced34aa7242a88f53728e25dd23fdf unknown <sryitscool59@gmail.com> 1771252518 +0700	clone: from https://github.com/aklyue/ssugt-outgoing-calls.git
+d3a4b9bd49ced34aa7242a88f53728e25dd23fdf 00eee44f8fca7a04f895d3001b55a08670ad8893 unknown <sryitscool59@gmail.com> 1773502982 +0700	commit: Added auth
+00eee44f8fca7a04f895d3001b55a08670ad8893 cbf51c0c084137a6afdca9bb5677db683fdb7a2f unknown <sryitscool59@gmail.com> 1773588537 +0700	commit: Feature: admin maintenance
+cbf51c0c084137a6afdca9bb5677db683fdb7a2f cbf51c0c084137a6afdca9bb5677db683fdb7a2f unknown <sryitscool59@gmail.com> 1774201090 +0700	checkout: moving from dev to chore/auth-change
+cbf51c0c084137a6afdca9bb5677db683fdb7a2f e04a9f7e71d4e260d83364ac958f3e56a5fb71de unknown <sryitscool59@gmail.com> 1774201116 +0700	commit: Chore: changed auth routes
+e04a9f7e71d4e260d83364ac958f3e56a5fb71de e04a9f7e71d4e260d83364ac958f3e56a5fb71de unknown <sryitscool59@gmail.com> 1775233625 +0700	checkout: moving from chore/auth-change to feature/logs
+e04a9f7e71d4e260d83364ac958f3e56a5fb71de ea76b496ddf2fc56806f93771b9f59f6b703c908 unknown <sryitscool59@gmail.com> 1775233648 +0700	commit: Feature: added logs
+ea76b496ddf2fc56806f93771b9f59f6b703c908 ea76b496ddf2fc56806f93771b9f59f6b703c908 unknown <sryitscool59@gmail.com> 1775307813 +0700	checkout: moving from feature/logs to feature/calls-logs-users-filters
+ea76b496ddf2fc56806f93771b9f59f6b703c908 9f16dab55c2ef4adca471e344959ae2bf79b6df6 unknown <sryitscool59@gmail.com> 1775307830 +0700	commit: Feature: added logs and calls filters, added users
+9f16dab55c2ef4adca471e344959ae2bf79b6df6 9f16dab55c2ef4adca471e344959ae2bf79b6df6 unknown <sryitscool59@gmail.com> 1775412377 +0700	checkout: moving from feature/calls-logs-users-filters to feature/added-ldap-lib
+9f16dab55c2ef4adca471e344959ae2bf79b6df6 43ef18ed50f327aac83343ebd0ced268315f7364 unknown <sryitscool59@gmail.com> 1775412404 +0700	commit: Feature: added ldap lib
+43ef18ed50f327aac83343ebd0ced268315f7364 43ef18ed50f327aac83343ebd0ced268315f7364 unknown <sryitscool59@gmail.com> 1783211422 +0700	checkout: moving from feature/added-ldap-lib to feature/email-and-control-calls
+43ef18ed50f327aac83343ebd0ced268315f7364 158461f905bb0bb4561fb58e63fb316cc6d1224a unknown <sryitscool59@gmail.com> 1783211442 +0700	commit: feat: added email and control calls maintenance
+158461f905bb0bb4561fb58e63fb316cc6d1224a 158461f905bb0bb4561fb58e63fb316cc6d1224a unknown <sryitscool59@gmail.com> 1783540858 +0700	checkout: moving from feature/email-and-control-calls to fix/email-and-control-call
+158461f905bb0bb4561fb58e63fb316cc6d1224a c7e499f74801796ff8c836f4ab819524a0dafec8 unknown <sryitscool59@gmail.com> 1783540875 +0700	commit: fix: fixed email reports and control calls
+c7e499f74801796ff8c836f4ab819524a0dafec8 70936fd724b3c560819f948c3c970facdad46e6d unknown <sryitscool59@gmail.com> 1783541346 +0700	commit: fix: rename env.example and prepare for merge

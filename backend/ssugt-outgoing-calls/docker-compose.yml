@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  outgoing_calls:
+    build:
+      context: .
+      dockerfile: docker/outgoing_calls/Dockerfile
+    restart: no
+    env_file: .env
+    ports:
+      - "${OUTGOING_CALLS_LOCAL_BIND}:${OUTGOING_CALLS_SERVER_PORT}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+      # - "billing.api.cloud.yandex.net:84.201.181.26"
+    volumes:
+      - .env:/app/.env
+      - ./src/api/outgoing_calls:/app/api/outgoing_calls
+      - ./key.json:/app/key.json
+    depends_on:
+      pg:
+        condition: service_healthy
+      rmq:
+        condition: service_healthy
+  storage:
+    build:
+      context: .
+      dockerfile: docker/storage/Dockerfile
+    restart: no
+    env_file: .env
+    ports:
+      - "${STORAGE_LOCAL_BIND}:${STORAGE_SERVER_PORT}"
+    volumes:
+      - .env:/app/.env
+      - ./src/api/storage:/app/api/storage
+      - /var/lib/asterisk/sounds/custom:/sounds/custom
+
+  pg:
+    image: postgres:15
+    volumes:
+      - ./resources/postgres/data:/var/lib/postgresql/data/
+    restart: no
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_LOCAL_BIND}:${POSTGRES_PORT}"
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rmq:
+    build:
+        context: .
+        dockerfile: docker/rabbitmq/Dockerfile
+    command: >
+      sh -c "rabbitmq-server"
+    ports:
+      - "${RABBITMQ_LOCAL_BIND}:${RABBITMQ_PORT}"
+      - "${RABBITMQ_WEB_LOCAL_BIND}:${RABBITMQ_WEB_PORT}"
+    volumes:
+      - ./resources/rabbitmq/data:/var/lib/rabbitmq
+    restart: no
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  mailpit:
+      image: axllent/mailpit
+      container_name: mailpit
+      restart: no
+      ports:
+        - "${SMTP_PORT:-1025}:1025" # Использует порт из .env (или 1025 по дефолту)
+        - "8025:8025"               # Веб-панель оставляем на 8025

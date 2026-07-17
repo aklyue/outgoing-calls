@@ -1,0 +1,38 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/aklyue/ssugt-outgoing-calls.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "dev"]
+	remote = origin
+	merge = refs/heads/dev
+	vscode-merge-base = origin/dev
+[branch "chore/auth-change"]
+	vscode-merge-base = origin/dev
+	remote = origin
+	merge = refs/heads/chore/auth-change
+[branch "feature/logs"]
+	vscode-merge-base = origin/chore/auth-change
+	remote = origin
+	merge = refs/heads/feature/logs
+[branch "feature/calls-logs-users-filters"]
+	vscode-merge-base = origin/feature/logs
+	remote = origin
+	merge = refs/heads/feature/calls-logs-users-filters
+[branch "feature/added-ldap-lib"]
+	vscode-merge-base = origin/feature/calls-logs-users-filters
+	remote = origin
+	merge = refs/heads/feature/added-ldap-lib
+[branch "feature/email-and-control-calls"]
+	vscode-merge-base = origin/feature/added-ldap-lib
+	remote = origin
+	merge = refs/heads/feature/email-and-control-calls
+[branch "fix/email-and-control-call"]
+	vscode-merge-base = origin/feature/email-and-control-calls
+	remote = origin
+	merge = refs/heads/fix/email-and-control-call

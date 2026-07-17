@@ -1,0 +1,8 @@
+edge-tts
+fastapi
+uvicorn
+pydantic
+python-multipart
+pydub
+ffmpeg
+ffprobe

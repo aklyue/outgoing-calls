@@ -1,0 +1,19 @@
+version: "3.11"
+
+services:
+  synthesizer:
+    build: .
+    restart: always
+    ports:
+      - ${SYNTHESIZER_LOCAL_BIND}:${SYNTHESIZER_SERVER_PORT}
+    env_file: .env
+    volumes:
+      - ./${TORCH_HOME}:${TORCH_HOME}
+      - ./src/synthesizer:/app/synthesizer
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
